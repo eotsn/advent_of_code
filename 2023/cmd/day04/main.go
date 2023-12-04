@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -16,10 +15,10 @@ func main() {
 		panic(err)
 	}
 
-	var sum int
+	var cards []*Card
 
 	var s []string
-	for _, line := range lines {
+	for i, line := range lines {
 		w := make(map[int]bool) // assemble winning numbers
 
 		s = strings.Split(line, ":")
@@ -29,28 +28,48 @@ func main() {
 			w[n] = true
 		}
 
-		count := -1.0
+		var count int
 		for _, n := range parseInts(s[1]) {
 			if w[n] {
 				count++
 			}
 		}
-
-		if count >= 0 {
-			sum += int(math.Pow(2, count))
-		}
+		cards = append(cards, &Card{number: i, winners: count})
 	}
 
+	for _, card := range cards {
+		countCards(card, cards)
+	}
+
+	var sum int
+	for _, card := range cards {
+		sum += card.visits
+	}
 	fmt.Println(sum)
 }
 
-func parseInts(s string) []int {
-	r := regexp.MustCompile(`(\d+)`)
-	matches := r.FindAllString(s, -1)
+type Card struct {
+	number  int
+	winners int
+	visits  int
+}
 
-	nums := make([]int, len(matches))
-	for i, match := range matches {
-		nums[i], _ = strconv.Atoi(match)
+func countCards(card *Card, winners []*Card) {
+	card.visits++
+	if card.winners == 0 || card.number >= len(winners) {
+		return
+	}
+	for i := 1; i <= card.winners; i++ {
+		countCards(winners[card.number+i], winners)
+	}
+	return
+}
+
+func parseInts(s string) (nums []int) {
+	r := regexp.MustCompile(`(\d+)`)
+	for _, match := range r.FindAllString(s, -1) {
+		n, _ := strconv.Atoi(match)
+		nums = append(nums, n)
 	}
 	return nums
 }
