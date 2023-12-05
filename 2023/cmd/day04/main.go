@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/eotsn/advent_of_code/2023/file"
+	"github.com/eotsn/advent_of_code/2023/parser"
 )
 
 func main() {
@@ -24,12 +23,12 @@ func main() {
 		s = strings.Split(line, ":")
 		s = strings.Split(s[1], "|")
 
-		for _, n := range parseInts(s[0]) {
+		for _, n := range parser.ParseInts(s[0]) {
 			w[n] = true
 		}
 
 		var count int
-		for _, n := range parseInts(s[1]) {
+		for _, n := range parser.ParseInts(s[1]) {
 			if w[n] {
 				count++
 			}
@@ -63,13 +62,4 @@ func countCards(card *Card, winners []*Card) {
 		countCards(winners[card.number+i], winners)
 	}
 	return
-}
-
-func parseInts(s string) (nums []int) {
-	r := regexp.MustCompile(`(\d+)`)
-	for _, match := range r.FindAllString(s, -1) {
-		n, _ := strconv.Atoi(match)
-		nums = append(nums, n)
-	}
-	return nums
 }
