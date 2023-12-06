@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/eotsn/advent_of_code/2023/file"
-	"github.com/eotsn/advent_of_code/2023/parser"
 )
 
 func main() {
@@ -13,28 +14,31 @@ func main() {
 		panic(err)
 	}
 
-	times := parser.ParseInts(lines[0])
-	distances := parser.ParseInts(lines[1])
+	t := parseNumber(lines[0])
+	d := parseNumber(lines[1])
 
-	sum := 1
-	for i := 0; i < len(times); i++ {
-		var speed int
-		for {
-			speed += 1
+	var speed int
+	for {
+		speed += 1
 
-			if distance(speed, times[i]) > distances[i] {
-				break
-			}
-
-			if speed == times[i] {
-				break
-			}
+		if distance(speed, t) > d {
+			break
 		}
-		sum *= (times[i] - speed) - speed + 1
+
+		if speed == t {
+			break
+		}
 	}
-	fmt.Println(sum)
+	fmt.Println((t - speed) - speed + 1)
 }
 
 func distance(s, t int) int {
-	return -s*s + s*t
+	return s * (t - s)
+}
+
+func parseNumber(line string) int {
+	s := strings.Replace(line, " ", "", -1)
+	t := strings.Split(s, ":")[1]
+	n, _ := strconv.Atoi(t)
+	return n
 }
