@@ -13,17 +13,17 @@ var Values = map[string]int{
 	"A": 14,
 	"K": 13,
 	"Q": 12,
-	"J": 11,
-	"T": 10,
-	"9": 9,
-	"8": 8,
-	"7": 7,
-	"6": 6,
-	"5": 5,
-	"4": 4,
-	"3": 3,
-	"2": 2,
-	"1": 1,
+	"T": 11,
+	"9": 10,
+	"8": 9,
+	"7": 8,
+	"6": 7,
+	"5": 6,
+	"4": 5,
+	"3": 4,
+	"2": 3,
+	"1": 2,
+	"J": 1,
 }
 
 type Hand struct {
@@ -69,14 +69,27 @@ func main() {
 }
 
 func getCounts(hand []string) []int {
+	var jokers int
 	cards := make(map[string]int)
 	for _, card := range hand {
-		cards[card]++
+		if card == "J" {
+			jokers++
+		} else {
+			cards[card]++
+		}
 	}
 	var counts []int
 	for _, v := range cards {
 		counts = append(counts, v)
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(counts)))
+
+	if jokers > 0 {
+		if len(counts) == 0 {
+			counts = append(counts, 5)
+		} else {
+			counts[0] += jokers
+		}
+	}
 	return counts
 }
